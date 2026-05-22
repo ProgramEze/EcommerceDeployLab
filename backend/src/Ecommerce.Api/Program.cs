@@ -16,23 +16,29 @@ public class Program
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
-            app.UseSwaggerUI();
+
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "EcommerceDeployLab API v1");
+                options.RoutePrefix = "swagger";
+            });
         }
 
         app.MapHealthChecks("/health");
 
         app.MapGet(
-            "/",
-            () =>
-                Results.Ok(
-                    new
-                    {
-                        application = "EcommerceDeployLab API",
-                        status = "Running",
-                        environment = app.Environment.EnvironmentName,
-                    }
-                )
-        );
+                "/",
+                () =>
+                    Results.Ok(
+                        new
+                        {
+                            application = "EcommerceDeployLab API",
+                            status = "Running",
+                            environment = app.Environment.EnvironmentName,
+                        }
+                    )
+            )
+            .WithName("Root");
 
         app.Run();
     }
