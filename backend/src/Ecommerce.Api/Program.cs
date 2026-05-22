@@ -1,3 +1,6 @@
+using Ecommerce.Application.DependencyInjection;
+using Ecommerce.Infrastructure.DependencyInjection;
+
 namespace Ecommerce.Api;
 
 public class Program
@@ -10,6 +13,9 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddHealthChecks();
+
+        builder.Services.AddApplication();
+        builder.Services.AddInfrastructure(builder.Configuration);
 
         var app = builder.Build();
 
