@@ -1,3 +1,4 @@
+using Ecommerce.Api.Middlewares;
 using Ecommerce.Application.DependencyInjection;
 using Ecommerce.Infrastructure.DependencyInjection;
 
@@ -20,6 +21,8 @@ public class Program
         builder.Services.AddInfrastructure(builder.Configuration);
 
         var app = builder.Build();
+
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
 
         if (app.Environment.IsDevelopment())
         {
