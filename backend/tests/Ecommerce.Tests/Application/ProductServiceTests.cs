@@ -185,6 +185,92 @@ public class ProductServiceTests
         Assert.False(result);
     }
 
+    [Fact]
+    public async Task IncreaseStockAsync_WhenProductExists_ShouldIncreaseStock()
+    {
+        var repository = new FakeProductRepository();
+        var service = new ProductService(repository);
+
+        var created = await service.CreateAsync(new CreateProductDto
+        {
+            Name = "Mouse",
+            Description = "Mouse inalámbrico.",
+            Price = 50m,
+            Stock = 10
+        });
+
+        var result = await service.IncreaseStockAsync(
+            created.Id,
+            new UpdateStockDto
+            {
+                Quantity = 5
+            }
+        );
+
+        Assert.NotNull(result);
+        Assert.Equal(15, result.Stock);
+    }
+
+    [Fact]
+    public async Task DecreaseStockAsync_WhenProductExists_ShouldDecreaseStock()
+    {
+        var repository = new FakeProductRepository();
+        var service = new ProductService(repository);
+
+        var created = await service.CreateAsync(new CreateProductDto
+        {
+            Name = "Teclado",
+            Description = "Teclado mecánico.",
+            Price = 100m,
+            Stock = 10
+        });
+
+        var result = await service.DecreaseStockAsync(
+            created.Id,
+            new UpdateStockDto
+            {
+                Quantity = 3
+            }
+        );
+
+        Assert.NotNull(result);
+        Assert.Equal(7, result.Stock);
+    }
+
+    [Fact]
+    public async Task IncreaseStockAsync_WhenProductDoesNotExist_ShouldReturnNull()
+    {
+        var repository = new FakeProductRepository();
+        var service = new ProductService(repository);
+
+        var result = await service.IncreaseStockAsync(
+            Guid.NewGuid(),
+            new UpdateStockDto
+            {
+                Quantity = 5
+            }
+        );
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task DecreaseStockAsync_WhenProductDoesNotExist_ShouldReturnNull()
+    {
+        var repository = new FakeProductRepository();
+        var service = new ProductService(repository);
+
+        var result = await service.DecreaseStockAsync(
+            Guid.NewGuid(),
+            new UpdateStockDto
+            {
+                Quantity = 5
+            }
+        );
+
+        Assert.Null(result);
+    }
+
     private class FakeProductRepository : IProductRepository
     {
         private readonly List<Product> _products = new();

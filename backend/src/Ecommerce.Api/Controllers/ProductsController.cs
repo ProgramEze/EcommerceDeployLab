@@ -82,4 +82,36 @@ public class ProductsController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPatch("{id:guid}/stock/increase")]
+    public async Task<ActionResult<ProductDto>> IncreaseStock(Guid id, UpdateStockDto dto)
+    {
+        var product = await _productService.IncreaseStockAsync(id, dto);
+
+        if (product is null)
+        {
+            return NotFound(new
+            {
+                message = "Producto no encontrado."
+            });
+        }
+
+        return Ok(product);
+    }
+
+    [HttpPatch("{id:guid}/stock/decrease")]
+    public async Task<ActionResult<ProductDto>> DecreaseStock(Guid id, UpdateStockDto dto)
+    {
+        var product = await _productService.DecreaseStockAsync(id, dto);
+
+        if (product is null)
+        {
+            return NotFound(new
+            {
+                message = "Producto no encontrado."
+            });
+        }
+
+        return Ok(product);
+    }
 }

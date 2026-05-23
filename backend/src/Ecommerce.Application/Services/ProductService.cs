@@ -71,6 +71,38 @@ public class ProductService : IProductService
         return true;
     }
 
+    public async Task<ProductDto?> IncreaseStockAsync(Guid id, UpdateStockDto dto)
+    {
+        var product = await _productRepository.GetByIdAsync(id);
+
+        if (product is null)
+        {
+            return null;
+        }
+
+        product.IncreaseStock(dto.Quantity);
+
+        await _productRepository.UpdateAsync(product);
+
+        return MapToDto(product);
+    }
+
+    public async Task<ProductDto?> DecreaseStockAsync(Guid id, UpdateStockDto dto)
+    {
+        var product = await _productRepository.GetByIdAsync(id);
+
+        if (product is null)
+        {
+            return null;
+        }
+
+        product.DecreaseStock(dto.Quantity);
+
+        await _productRepository.UpdateAsync(product);
+
+        return MapToDto(product);
+    }
+
     private static ProductDto MapToDto(Product product)
     {
         return new ProductDto
