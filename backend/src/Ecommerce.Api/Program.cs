@@ -9,6 +9,8 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Services.AddControllers();
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
@@ -33,18 +35,20 @@ public class Program
         app.MapHealthChecks("/health");
 
         app.MapGet(
-                "/",
-                () =>
-                    Results.Ok(
-                        new
-                        {
-                            application = "EcommerceDeployLab API",
-                            status = "Running",
-                            environment = app.Environment.EnvironmentName,
-                        }
-                    )
-            )
-            .WithName("Root");
+            "/",
+            () =>
+                Results.Ok(
+                    new
+                    {
+                        application = "EcommerceDeployLab API",
+                        status = "Running",
+                        environment = app.Environment.EnvironmentName,
+                    }
+                )
+        )
+        .WithName("Root");
+
+        app.MapControllers();
 
         app.Run();
     }
