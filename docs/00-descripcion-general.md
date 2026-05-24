@@ -34,6 +34,7 @@ El sistema será un e-commerce prototipo que permitirá:
 - Simular un pago.
 - Confirmar una compra.
 - Descontar stock al confirmar una orden.
+- Ejecutar el checkout con transacciones.
 - Guardar órdenes.
 - Desplegar la solución completa en la nube.
 
@@ -244,6 +245,7 @@ Los entregables documentados hasta el momento son:
 - `16-checkout-ordenes-infrastructure.md`
 - `17-checkout-ordenes-api.md`
 - `18-confirmacion-descuenta-stock.md`
+- `19-transacciones-checkout.md`
 
 ## Decisiones arquitectónicas documentadas
 
@@ -267,6 +269,7 @@ Hasta el momento se documentaron decisiones como:
 - Persistir órdenes con Entity Framework Core.
 - Exponer órdenes mediante controller.
 - Descontar stock al confirmar una orden.
+- Usar transacciones en checkout.
 
 ## Estado actual del proyecto
 
@@ -285,12 +288,13 @@ Actualmente el proyecto cuenta con:
 - Persistencia de órdenes con Entity Framework Core y PostgreSQL.
 - API de órdenes para crear, consultar, confirmar y cancelar órdenes.
 - Descuento de stock al confirmar órdenes.
+- Confirmación de órdenes ejecutada dentro de una transacción.
 - Tests unitarios para reglas de dominio y servicios de aplicación.
 - Documentación técnica por entregable.
 - ADRs para decisiones arquitectónicas importantes.
 
 ## Próximo paso
 
-El siguiente paso es mejorar la consistencia del checkout usando transacciones.
+El siguiente paso es modelar el dominio de pagos.
 
-Ese entregable permitirá asegurar que la confirmación de una orden y el descuento de stock se realicen como una única operación atómica.
+Ese entregable permitirá representar pagos asociados a órdenes, preparando el sistema para simular o integrar un flujo de cobro.

@@ -375,15 +375,16 @@ public class OrderServiceTests
     }
 
     private static OrderService CreateService(
-        FakeOrderRepository orderRepository,
-        FakeCartRepository cartRepository,
-        FakeProductRepository productRepository
-    )
+    FakeOrderRepository orderRepository,
+    FakeCartRepository cartRepository,
+    FakeProductRepository productRepository
+)
     {
         return new OrderService(
             orderRepository,
             cartRepository,
-            productRepository
+            productRepository,
+            new FakeUnitOfWork()
         );
     }
 
@@ -534,6 +535,14 @@ public class OrderServiceTests
             _products.Remove(product);
 
             return Task.CompletedTask;
+        }
+    }
+
+    private class FakeUnitOfWork : IUnitOfWork
+    {
+        public async Task<T> ExecuteInTransactionAsync<T>(Func<Task<T>> action)
+        {
+            return await action();
         }
     }
 }

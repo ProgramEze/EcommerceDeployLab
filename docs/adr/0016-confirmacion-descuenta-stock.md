@@ -42,3 +42,4 @@ Antes de descontar stock, se validará:
 - La confirmación de una orden modifica productos.
 - Los tests de Application necesitan simular productos.
 - Más adelante será importante considerar transacciones para garantizar consistencia total.
+- Es importante validar el estado de la orden antes de modificar el stock para evitar descuentos duplicados.
