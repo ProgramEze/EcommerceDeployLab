@@ -153,6 +153,7 @@ Actualmente expone endpoints para:
 - Operaciones de stock.
 - Carritos.
 - Items del carrito.
+- Órdenes.
 
 ### Ecommerce.Tests
 
@@ -236,6 +237,7 @@ Los entregables documentados hasta el momento son:
 - `14-checkout-ordenes-dominio.md`
 - `15-checkout-ordenes-application.md`
 - `16-checkout-ordenes-infrastructure.md`
+- `17-checkout-ordenes-api.md`
 
 ## Decisiones arquitectónicas documentadas
 
@@ -257,6 +259,7 @@ Hasta el momento se documentaron decisiones como:
 - Modelar órdenes de compra en el dominio.
 - Definir casos de uso de órdenes en Application.
 - Persistir órdenes con Entity Framework Core.
+- Exponer órdenes mediante controller.
 
 ## Estado actual del proyecto
 
@@ -273,12 +276,13 @@ Actualmente el proyecto cuenta con:
 - Dominio inicial de órdenes de compra.
 - Casos de uso de órdenes en Application.
 - Persistencia de órdenes con Entity Framework Core y PostgreSQL.
+- API de órdenes para crear, consultar, confirmar y cancelar órdenes.
 - Tests unitarios para reglas de dominio y servicios de aplicación.
 - Documentación técnica por entregable.
 - ADRs para decisiones arquitectónicas importantes.
 
 ## Próximo paso
 
-El siguiente paso es crear la API de órdenes.
+El siguiente paso es mejorar el flujo de checkout para descontar stock al confirmar una orden.
 
-Ese entregable permitirá exponer endpoints HTTP para crear órdenes desde carritos, consultar órdenes, confirmar órdenes y cancelar órdenes.
+Ese entregable permitirá que una orden confirmada afecte el inventario real del catálogo, acercando el sistema a un comportamiento más propio de un e-commerce productivo.
