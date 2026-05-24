@@ -25,14 +25,18 @@ El sistema será un e-commerce prototipo que permitirá:
 
 - Visualizar productos.
 - Administrar un catálogo.
-- Agregar productos a un carrito.
-- Realizar un checkout.
+- Manejar stock.
+- Crear carritos de compra.
+- Agregar productos al carrito.
+- Validar productos contra el catálogo real.
+- Realizar checkout.
+- Generar órdenes de compra.
 - Simular un pago.
 - Confirmar una compra.
 - Guardar órdenes.
 - Desplegar la solución completa en la nube.
 
-El proyecto se construirá por entregables pequeños, donde cada etapa agrega una funcionalidad concreta y documentada.
+El proyecto se construye por entregables pequeños, donde cada etapa agrega una funcionalidad concreta y documentada.
 
 ## Stack tecnológico inicial
 
@@ -72,7 +76,16 @@ Incluye:
 - Entidades.
 - Reglas de negocio.
 - Excepciones de dominio.
+- Enums.
 - Comportamientos propios del sistema.
+
+Actualmente contiene entidades como:
+
+- `Product`
+- `Cart`
+- `CartItem`
+- `Order`
+- `OrderItem`
 
 No depende de base de datos, API, frameworks web ni infraestructura externa.
 
@@ -85,9 +98,20 @@ Incluye:
 - DTOs.
 - Interfaces.
 - Servicios de aplicación.
-- Contratos que luego implementará Infrastructure.
+- Contratos que luego implementa Infrastructure.
 
 Coordina acciones del sistema sin depender de detalles técnicos concretos.
+
+Actualmente contiene casos de uso para:
+
+- Productos.
+- Carritos.
+
+Más adelante se agregarán casos de uso para:
+
+- Órdenes.
+- Pagos.
+- Checkout completo.
 
 ### Ecommerce.Infrastructure
 
@@ -100,6 +124,13 @@ Incluye:
 - Configuraciones de base de datos.
 - Repositorios concretos.
 - Acceso a PostgreSQL.
+- Migraciones.
+
+Actualmente implementa persistencia para:
+
+- Productos.
+- Carritos.
+- Items del carrito.
 
 ### Ecommerce.Api
 
@@ -112,6 +143,14 @@ Incluye:
 - Configuración de Swagger.
 - Health checks.
 - Registro de dependencias.
+- Middleware global de errores.
+
+Actualmente expone endpoints para:
+
+- Productos.
+- Operaciones de stock.
+- Carritos.
+- Items del carrito.
 
 ### Ecommerce.Tests
 
@@ -123,6 +162,49 @@ Incluye:
 - Tests de aplicación.
 - Pruebas unitarias de reglas y servicios.
 
+Actualmente existen tests para:
+
+- Productos.
+- Operaciones de stock.
+- Carritos.
+- Items del carrito.
+- Servicios de aplicación del carrito.
+- Órdenes.
+- Items de órdenes.
+
+## Flujo actual implementado
+
+Hasta este punto, el sistema permite:
+
+```text
+Cliente HTTP / Swagger
+        ↓
+API Controllers
+        ↓
+Application Services
+        ↓
+Domain Entities
+        ↓
+Repositories
+        ↓
+Entity Framework Core
+        ↓
+PostgreSQL en Docker
+```
+
+Los productos pueden administrarse desde la API y persistirse en PostgreSQL.
+
+Los carritos pueden crearse, consultarse y modificarse desde la API.
+
+Al agregar un producto al carrito, el backend busca el producto real en el catálogo y toma de ahí:
+
+- Nombre.
+- Precio.
+- Stock.
+- Estado activo/inactivo.
+
+Esto evita que el cliente pueda manipular el precio o el nombre del producto.
+
 ## Objetivo de la documentación
 
 La carpeta `docs/` contiene documentación técnica del avance del proyecto.
@@ -133,17 +215,62 @@ La carpeta `docs/adr/` contiene decisiones arquitectónicas. Estas decisiones ex
 
 ## Entregables documentados
 
-Los entregables iniciales son:
+Los entregables documentados hasta el momento son:
 
-- Backend base.
-- Health check y Swagger.
-- Dominio del catálogo de productos.
-- Capa Application para productos.
-- Infrastructure con EF Core y PostgreSQL.
-- API de productos.
+- `00-descripcion-general.md`
+- `01-backend-base.md`
+- `02-health-check-y-swagger.md`
+- `03-catalogo-productos-dominio.md`
+- `04-catalogo-productos-application.md`
+- `05-infrastructure-efcore-postgresql.md`
+- `06-api-productos.md`
+- `07-manejo-global-errores.md`
+- `08-operaciones-stock.md`
+- `09-carrito-dominio.md`
+- `10-carrito-application.md`
+- `11-carrito-infrastructure.md`
+- `12-carrito-api.md`
+- `13-carrito-catalogo-real.md`
+- `14-checkout-ordenes-dominio.md`
+
+## Decisiones arquitectónicas documentadas
+
+Las decisiones arquitectónicas se encuentran en `docs/adr/`.
+
+Hasta el momento se documentaron decisiones como:
+
+- Usar arquitectura limpia.
+- Proteger entidades de dominio.
+- Usar DTOs y servicios de aplicación.
+- Usar PostgreSQL con Entity Framework Core.
+- Manejar errores mediante middleware global.
+- Usar operaciones específicas para modificar stock.
+- Diseñar el carrito como dominio propio.
+- Definir casos de uso del carrito en Application.
+- Persistir el carrito con Entity Framework Core.
+- Exponer el carrito mediante controller.
+- Integrar carrito con catálogo real.
+- Modelar órdenes de compra en el dominio.
 
 ## Estado actual del proyecto
 
-Actualmente el proyecto cuenta con una estructura backend inicial, documentación técnica, arquitectura por capas, dominio de productos, capa de aplicación e infraestructura con PostgreSQL.
+Actualmente el proyecto cuenta con:
 
-El siguiente paso es exponer endpoints HTTP para administrar productos desde la API.
+- Backend estructurado en capas.
+- Catálogo de productos funcional.
+- Persistencia en PostgreSQL.
+- API de productos.
+- Operaciones específicas de stock.
+- Manejo global de errores.
+- Carrito de compras con dominio, application, infrastructure y API.
+- Integración del carrito con el catálogo real de productos.
+- Dominio inicial de órdenes de compra.
+- Tests unitarios para reglas de dominio y servicios de aplicación.
+- Documentación técnica por entregable.
+- ADRs para decisiones arquitectónicas importantes.
+
+## Próximo paso
+
+El siguiente paso es crear la capa Application para órdenes.
+
+Ese entregable permitirá convertir un carrito real en una orden de compra, preparando el sistema para el checkout completo y la futura integración de pagos.
