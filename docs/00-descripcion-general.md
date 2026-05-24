@@ -88,6 +88,7 @@ Actualmente contiene entidades como:
 - `CartItem`
 - `Order`
 - `OrderItem`
+- `Payment`
 
 No depende de base de datos, API, frameworks web ni infraestructura externa.
 
@@ -176,6 +177,7 @@ Actualmente existen tests para:
 - Servicios de aplicación del carrito.
 - Órdenes.
 - Items de órdenes.
+- Pagos.
 
 ## Flujo actual implementado
 
@@ -246,6 +248,7 @@ Los entregables documentados hasta el momento son:
 - `17-checkout-ordenes-api.md`
 - `18-confirmacion-descuenta-stock.md`
 - `19-transacciones-checkout.md`
+- `20-pagos-dominio.md`
 
 ## Decisiones arquitectónicas documentadas
 
@@ -270,6 +273,7 @@ Hasta el momento se documentaron decisiones como:
 - Exponer órdenes mediante controller.
 - Descontar stock al confirmar una orden.
 - Usar transacciones en checkout.
+- Modelar pagos en el dominio.
 
 ## Estado actual del proyecto
 
@@ -289,12 +293,13 @@ Actualmente el proyecto cuenta con:
 - API de órdenes para crear, consultar, confirmar y cancelar órdenes.
 - Descuento de stock al confirmar órdenes.
 - Confirmación de órdenes ejecutada dentro de una transacción.
+- Dominio inicial de pagos.
 - Tests unitarios para reglas de dominio y servicios de aplicación.
 - Documentación técnica por entregable.
 - ADRs para decisiones arquitectónicas importantes.
 
 ## Próximo paso
 
-El siguiente paso es modelar el dominio de pagos.
+El siguiente paso es crear la capa Application para pagos.
 
-Ese entregable permitirá representar pagos asociados a órdenes, preparando el sistema para simular o integrar un flujo de cobro.
+Ese entregable permitirá crear casos de uso para registrar, aprobar, rechazar y cancelar pagos asociados a órdenes.
