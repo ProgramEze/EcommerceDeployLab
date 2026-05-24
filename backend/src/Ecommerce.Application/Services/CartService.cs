@@ -1,16 +1,22 @@
 using Ecommerce.Application.DTOs;
 using Ecommerce.Application.Interfaces;
 using Ecommerce.Domain.Entities;
+using Ecommerce.Domain.Exceptions;
 
 namespace Ecommerce.Application.Services;
 
 public class CartService : ICartService
 {
     private readonly ICartRepository _cartRepository;
+    private readonly IProductRepository _productRepository;
 
-    public CartService(ICartRepository cartRepository)
+    public CartService(
+        ICartRepository cartRepository,
+        IProductRepository productRepository
+    )
     {
         _cartRepository = cartRepository;
+        _productRepository = productRepository;
     }
 
     public async Task<CartDto> CreateAsync()
@@ -43,10 +49,33 @@ public class CartService : ICartService
             return null;
         }
 
+        var product = await _productRepository.GetByIdAsync(dto.ProductId);
+
+        if (product is null)
+        {
+            throw new DomainException("El producto no existe.");
+        }
+
+        if (!product.IsActive)
+        {
+            throw new DomainException("El producto no está activo.");
+        }
+
+        var currentQuantityInCart = cart.Items
+            .Where(item => item.ProductId == product.Id)
+            .Sum(item => item.Quantity);
+
+        var requestedTotalQuantity = currentQuantityInCart + dto.Quantity;
+
+        if (requestedTotalQuantity > product.Stock)
+        {
+            throw new DomainException("No hay stock suficiente para agregar esa cantidad al carrito.");
+        }
+
         cart.AddItem(
-            dto.ProductId,
-            dto.ProductName,
-            dto.UnitPrice,
+            product.Id,
+            product.Name,
+            product.Price,
             dto.Quantity
         );
 
