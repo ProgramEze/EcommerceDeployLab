@@ -110,10 +110,10 @@ Actualmente contiene casos de uso para:
 - Productos.
 - Carritos.
 - Órdenes.
+- Pagos.
 
 Más adelante se agregarán casos de uso para:
 
-- Pagos.
 - Checkout completo.
 
 ### Ecommerce.Infrastructure
@@ -249,6 +249,7 @@ Los entregables documentados hasta el momento son:
 - `18-confirmacion-descuenta-stock.md`
 - `19-transacciones-checkout.md`
 - `20-pagos-dominio.md`
+- `21-pagos-application.md`
 
 ## Decisiones arquitectónicas documentadas
 
@@ -274,6 +275,7 @@ Hasta el momento se documentaron decisiones como:
 - Descontar stock al confirmar una orden.
 - Usar transacciones en checkout.
 - Modelar pagos en el dominio.
+- Definir casos de uso de pagos en Application.
 
 ## Estado actual del proyecto
 
@@ -294,12 +296,13 @@ Actualmente el proyecto cuenta con:
 - Descuento de stock al confirmar órdenes.
 - Confirmación de órdenes ejecutada dentro de una transacción.
 - Dominio inicial de pagos.
+- Casos de uso de pagos en Application.
 - Tests unitarios para reglas de dominio y servicios de aplicación.
 - Documentación técnica por entregable.
 - ADRs para decisiones arquitectónicas importantes.
 
 ## Próximo paso
 
-El siguiente paso es crear la capa Application para pagos.
+El siguiente paso es crear la capa Infrastructure para pagos.
 
-Ese entregable permitirá crear casos de uso para registrar, aprobar, rechazar y cancelar pagos asociados a órdenes.
+Ese entregable permitirá persistir pagos reales en PostgreSQL y preparar la API de pagos.
