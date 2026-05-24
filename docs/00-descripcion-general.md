@@ -32,6 +32,7 @@ El sistema será un e-commerce prototipo que permitirá:
 - Realizar checkout.
 - Generar órdenes de compra.
 - Simular un pago.
+- Registrar y administrar pagos.
 - Confirmar una compra.
 - Descontar stock al confirmar una orden.
 - Ejecutar el checkout con transacciones.
@@ -158,6 +159,7 @@ Actualmente expone endpoints para:
 - Carritos.
 - Items del carrito.
 - Órdenes.
+- Pagos.
 
 ### Ecommerce.Tests
 
@@ -252,6 +254,7 @@ Los entregables documentados hasta el momento son:
 - `20-pagos-dominio.md`
 - `21-pagos-application.md`
 - `22-pagos-infrastructure.md`
+- `23-pagos-api.md`
 
 ## Decisiones arquitectónicas documentadas
 
@@ -279,6 +282,7 @@ Hasta el momento se documentaron decisiones como:
 - Modelar pagos en el dominio.
 - Definir casos de uso de pagos en Application.
 - Persistir pagos con Entity Framework Core.
+- Exponer pagos mediante controller.
 
 ## Estado actual del proyecto
 
@@ -301,12 +305,13 @@ Actualmente el proyecto cuenta con:
 - Dominio inicial de pagos.
 - Casos de uso de pagos en Application.
 - Persistencia de pagos con Entity Framework Core y PostgreSQL.
+- API de pagos para registrar, consultar y modificar pagos.
 - Tests unitarios para reglas de dominio y servicios de aplicación.
 - Documentación técnica por entregable.
 - ADRs para decisiones arquitectónicas importantes.
 
 ## Próximo paso
 
-El siguiente paso es crear la API de pagos.
+El siguiente paso es integrar pagos con el flujo de órdenes.
 
-Ese entregable permitirá exponer endpoints HTTP para registrar pagos, consultar pagos y modificar su estado.
+Ese entregable permitirá que aprobar un pago impacte en el estado del proceso de compra, dejando el checkout más cercano a un flujo real.
