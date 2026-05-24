@@ -2,21 +2,24 @@ using Ecommerce.Application.DTOs;
 using Ecommerce.Application.Interfaces;
 using Ecommerce.Domain.Entities;
 using Ecommerce.Domain.Exceptions;
-
+using Ecommerce.Domain.Enums;
 namespace Ecommerce.Application.Services;
 
 public class OrderService : IOrderService
 {
     private readonly IOrderRepository _orderRepository;
     private readonly ICartRepository _cartRepository;
+    private readonly IProductRepository _productRepository;
 
     public OrderService(
         IOrderRepository orderRepository,
-        ICartRepository cartRepository
+        ICartRepository cartRepository,
+        IProductRepository productRepository
     )
     {
         _orderRepository = orderRepository;
         _cartRepository = cartRepository;
+        _productRepository = productRepository;
     }
 
     public async Task<IReadOnlyList<OrderDto>> GetAllAsync()
@@ -86,13 +89,56 @@ public class OrderService : IOrderService
             return null;
         }
 
+        if (order.Status == OrderStatus.Confirmed)
+        {
+            throw new DomainException("La orden ya está confirmada.");
+        }
+
+        if (order.Status == OrderStatus.Cancelled)
+        {
+            throw new DomainException("No se puede confirmar una orden cancelada.");
+        }
+
+        foreach (var item in order.Items)
+        {
+            var product = await _productRepository.GetByIdAsync(item.ProductId);
+
+            if (product is null)
+            {
+                throw new DomainException("Uno de los productos de la orden ya no existe.");
+            }
+
+            if (!product.IsActive)
+            {
+                throw new DomainException("Uno de los productos de la orden ya no está activo.");
+            }
+
+            if (item.Quantity > product.Stock)
+            {
+                throw new DomainException("No hay stock suficiente para confirmar la orden.");
+            }
+        }
+
+        foreach (var item in order.Items)
+        {
+            var product = await _productRepository.GetByIdAsync(item.ProductId);
+
+            if (product is null)
+            {
+                throw new DomainException("Uno de los productos de la orden ya no existe.");
+            }
+
+            product.DecreaseStock(item.Quantity);
+
+            await _productRepository.UpdateAsync(product);
+        }
+
         order.Confirm();
 
         await _orderRepository.UpdateAsync(order);
 
         return MapToDto(order);
     }
-
     public async Task<OrderDto?> CancelAsync(Guid id)
     {
         var order = await _orderRepository.GetByIdAsync(id);

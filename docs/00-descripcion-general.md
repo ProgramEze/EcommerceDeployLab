@@ -33,6 +33,7 @@ El sistema será un e-commerce prototipo que permitirá:
 - Generar órdenes de compra.
 - Simular un pago.
 - Confirmar una compra.
+- Descontar stock al confirmar una orden.
 - Guardar órdenes.
 - Desplegar la solución completa en la nube.
 
@@ -208,6 +209,10 @@ Al agregar un producto al carrito, el backend busca el producto real en el catá
 
 Esto evita que el cliente pueda manipular el precio o el nombre del producto.
 
+Las órdenes pueden crearse desde carritos reales.
+
+Al confirmar una orden, el sistema valida los productos de la orden y descuenta el stock correspondiente del catálogo.
+
 ## Objetivo de la documentación
 
 La carpeta `docs/` contiene documentación técnica del avance del proyecto.
@@ -238,6 +243,7 @@ Los entregables documentados hasta el momento son:
 - `15-checkout-ordenes-application.md`
 - `16-checkout-ordenes-infrastructure.md`
 - `17-checkout-ordenes-api.md`
+- `18-confirmacion-descuenta-stock.md`
 
 ## Decisiones arquitectónicas documentadas
 
@@ -260,6 +266,7 @@ Hasta el momento se documentaron decisiones como:
 - Definir casos de uso de órdenes en Application.
 - Persistir órdenes con Entity Framework Core.
 - Exponer órdenes mediante controller.
+- Descontar stock al confirmar una orden.
 
 ## Estado actual del proyecto
 
@@ -277,12 +284,13 @@ Actualmente el proyecto cuenta con:
 - Casos de uso de órdenes en Application.
 - Persistencia de órdenes con Entity Framework Core y PostgreSQL.
 - API de órdenes para crear, consultar, confirmar y cancelar órdenes.
+- Descuento de stock al confirmar órdenes.
 - Tests unitarios para reglas de dominio y servicios de aplicación.
 - Documentación técnica por entregable.
 - ADRs para decisiones arquitectónicas importantes.
 
 ## Próximo paso
 
-El siguiente paso es mejorar el flujo de checkout para descontar stock al confirmar una orden.
+El siguiente paso es mejorar la consistencia del checkout usando transacciones.
 
-Ese entregable permitirá que una orden confirmada afecte el inventario real del catálogo, acercando el sistema a un comportamiento más propio de un e-commerce productivo.
+Ese entregable permitirá asegurar que la confirmación de una orden y el descuento de stock se realicen como una única operación atómica.

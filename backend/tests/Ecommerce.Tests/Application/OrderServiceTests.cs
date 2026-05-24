@@ -14,7 +14,8 @@ public class OrderServiceTests
     {
         var orderRepository = new FakeOrderRepository();
         var cartRepository = new FakeCartRepository();
-        var service = CreateService(orderRepository, cartRepository);
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
 
         var cart = CreateCartWithItems();
 
@@ -42,7 +43,8 @@ public class OrderServiceTests
     {
         var orderRepository = new FakeOrderRepository();
         var cartRepository = new FakeCartRepository();
-        var service = CreateService(orderRepository, cartRepository);
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
 
         var exception = await Assert.ThrowsAsync<DomainException>(() =>
             service.CreateFromCartAsync(new CreateOrderDto
@@ -61,7 +63,8 @@ public class OrderServiceTests
     {
         var orderRepository = new FakeOrderRepository();
         var cartRepository = new FakeCartRepository();
-        var service = CreateService(orderRepository, cartRepository);
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
 
         var cart = new Cart();
 
@@ -84,7 +87,8 @@ public class OrderServiceTests
     {
         var orderRepository = new FakeOrderRepository();
         var cartRepository = new FakeCartRepository();
-        var service = CreateService(orderRepository, cartRepository);
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
 
         var order = CreateOrder();
 
@@ -101,7 +105,8 @@ public class OrderServiceTests
     {
         var orderRepository = new FakeOrderRepository();
         var cartRepository = new FakeCartRepository();
-        var service = CreateService(orderRepository, cartRepository);
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
 
         var result = await service.GetByIdAsync(Guid.NewGuid());
 
@@ -113,7 +118,8 @@ public class OrderServiceTests
     {
         var orderRepository = new FakeOrderRepository();
         var cartRepository = new FakeCartRepository();
-        var service = CreateService(orderRepository, cartRepository);
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
 
         orderRepository.Seed(CreateOrder());
         orderRepository.Seed(CreateOrder());
@@ -124,14 +130,40 @@ public class OrderServiceTests
     }
 
     [Fact]
-    public async Task ConfirmAsync_WhenOrderExists_ShouldConfirmOrder()
+    public async Task ConfirmAsync_WhenOrderExists_ShouldConfirmOrderAndDecreaseProductStock()
     {
         var orderRepository = new FakeOrderRepository();
         var cartRepository = new FakeCartRepository();
-        var service = CreateService(orderRepository, cartRepository);
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
 
-        var order = CreateOrder();
+        var productId = Guid.NewGuid();
 
+        var product = new Product(
+            "Mouse Logitech",
+            "Mouse inalámbrico.",
+            50m,
+            10
+        );
+
+        SetProductId(product, productId);
+
+        var order = new Order(
+            Guid.NewGuid(),
+            "Cliente",
+            "cliente@example.com",
+            new List<OrderItem>
+            {
+                new OrderItem(
+                    productId,
+                    "Mouse Logitech",
+                    50m,
+                    2
+                )
+            }
+        );
+
+        productRepository.Seed(product);
         orderRepository.Seed(order);
 
         var result = await service.ConfirmAsync(order.Id);
@@ -139,6 +171,7 @@ public class OrderServiceTests
         Assert.NotNull(result);
         Assert.Equal(OrderStatus.Confirmed, result.Status);
         Assert.NotNull(result.ConfirmedAt);
+        Assert.Equal(8, product.Stock);
     }
 
     [Fact]
@@ -146,7 +179,8 @@ public class OrderServiceTests
     {
         var orderRepository = new FakeOrderRepository();
         var cartRepository = new FakeCartRepository();
-        var service = CreateService(orderRepository, cartRepository);
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
 
         var result = await service.ConfirmAsync(Guid.NewGuid());
 
@@ -154,11 +188,167 @@ public class OrderServiceTests
     }
 
     [Fact]
+    public async Task ConfirmAsync_WhenProductDoesNotExist_ShouldThrowDomainException()
+    {
+        var orderRepository = new FakeOrderRepository();
+        var cartRepository = new FakeCartRepository();
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
+
+        var order = CreateOrder();
+
+        orderRepository.Seed(order);
+
+        var exception = await Assert.ThrowsAsync<DomainException>(() =>
+            service.ConfirmAsync(order.Id)
+        );
+
+        Assert.Equal("Uno de los productos de la orden ya no existe.", exception.Message);
+    }
+
+    [Fact]
+    public async Task ConfirmAsync_WhenProductIsInactive_ShouldThrowDomainException()
+    {
+        var orderRepository = new FakeOrderRepository();
+        var cartRepository = new FakeCartRepository();
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
+
+        var productId = Guid.NewGuid();
+
+        var product = new Product(
+            "Mouse Logitech",
+            "Mouse inalámbrico.",
+            50m,
+            10
+        );
+
+        SetProductId(product, productId);
+        product.Deactivate();
+
+        var order = new Order(
+            Guid.NewGuid(),
+            "Cliente",
+            "cliente@example.com",
+            new List<OrderItem>
+            {
+                new OrderItem(
+                    productId,
+                    "Mouse Logitech",
+                    50m,
+                    2
+                )
+            }
+        );
+
+        productRepository.Seed(product);
+        orderRepository.Seed(order);
+
+        var exception = await Assert.ThrowsAsync<DomainException>(() =>
+            service.ConfirmAsync(order.Id)
+        );
+
+        Assert.Equal("Uno de los productos de la orden ya no está activo.", exception.Message);
+    }
+
+    [Fact]
+    public async Task ConfirmAsync_WhenStockIsInsufficient_ShouldThrowDomainException()
+    {
+        var orderRepository = new FakeOrderRepository();
+        var cartRepository = new FakeCartRepository();
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
+
+        var productId = Guid.NewGuid();
+
+        var product = new Product(
+            "Mouse Logitech",
+            "Mouse inalámbrico.",
+            50m,
+            1
+        );
+
+        SetProductId(product, productId);
+
+        var order = new Order(
+            Guid.NewGuid(),
+            "Cliente",
+            "cliente@example.com",
+            new List<OrderItem>
+            {
+                new OrderItem(
+                    productId,
+                    "Mouse Logitech",
+                    50m,
+                    2
+                )
+            }
+        );
+
+        productRepository.Seed(product);
+        orderRepository.Seed(order);
+
+        var exception = await Assert.ThrowsAsync<DomainException>(() =>
+            service.ConfirmAsync(order.Id)
+        );
+
+        Assert.Equal("No hay stock suficiente para confirmar la orden.", exception.Message);
+    }
+
+    [Fact]
+    public async Task ConfirmAsync_WhenOrderIsAlreadyConfirmed_ShouldThrowDomainExceptionAndNotDecreaseStockTwice()
+    {
+        var orderRepository = new FakeOrderRepository();
+        var cartRepository = new FakeCartRepository();
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
+
+        var productId = Guid.NewGuid();
+
+        var product = new Product(
+            "Mouse Logitech",
+            "Mouse inalámbrico.",
+            50m,
+            10
+        );
+
+        SetProductId(product, productId);
+
+        var order = new Order(
+            Guid.NewGuid(),
+            "Cliente",
+            "cliente@example.com",
+            new List<OrderItem>
+            {
+                new OrderItem(
+                    productId,
+                    "Mouse Logitech",
+                    50m,
+                    2
+                )
+            }
+        );
+
+        productRepository.Seed(product);
+        orderRepository.Seed(order);
+
+        await service.ConfirmAsync(order.Id);
+
+        var exception = await Assert.ThrowsAsync<DomainException>(() =>
+            service.ConfirmAsync(order.Id)
+        );
+
+        Assert.Equal("La orden ya está confirmada.", exception.Message);
+        Assert.Equal(8, product.Stock);
+    }
+
+    [Fact]
     public async Task CancelAsync_WhenOrderExists_ShouldCancelOrder()
     {
         var orderRepository = new FakeOrderRepository();
         var cartRepository = new FakeCartRepository();
-        var service = CreateService(orderRepository, cartRepository);
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
 
         var order = CreateOrder();
 
@@ -176,7 +366,8 @@ public class OrderServiceTests
     {
         var orderRepository = new FakeOrderRepository();
         var cartRepository = new FakeCartRepository();
-        var service = CreateService(orderRepository, cartRepository);
+        var productRepository = new FakeProductRepository();
+        var service = CreateService(orderRepository, cartRepository, productRepository);
 
         var result = await service.CancelAsync(Guid.NewGuid());
 
@@ -185,10 +376,15 @@ public class OrderServiceTests
 
     private static OrderService CreateService(
         FakeOrderRepository orderRepository,
-        FakeCartRepository cartRepository
+        FakeCartRepository cartRepository,
+        FakeProductRepository productRepository
     )
     {
-        return new OrderService(orderRepository, cartRepository);
+        return new OrderService(
+            orderRepository,
+            cartRepository,
+            productRepository
+        );
     }
 
     private static Cart CreateCartWithItems()
@@ -221,6 +417,13 @@ public class OrderServiceTests
                 )
             }
         );
+    }
+
+    private static void SetProductId(Product product, Guid id)
+    {
+        typeof(Product)
+            .GetProperty(nameof(Product.Id))!
+            .SetValue(product, id);
     }
 
     private class FakeCartRepository : ICartRepository
@@ -289,6 +492,47 @@ public class OrderServiceTests
 
         public Task UpdateAsync(Order order)
         {
+            return Task.CompletedTask;
+        }
+    }
+
+    private class FakeProductRepository : IProductRepository
+    {
+        private readonly List<Product> _products = new();
+
+        public void Seed(Product product)
+        {
+            _products.Add(product);
+        }
+
+        public Task<IReadOnlyList<Product>> GetAllAsync()
+        {
+            return Task.FromResult<IReadOnlyList<Product>>(_products);
+        }
+
+        public Task<Product?> GetByIdAsync(Guid id)
+        {
+            var product = _products.FirstOrDefault(product => product.Id == id);
+
+            return Task.FromResult(product);
+        }
+
+        public Task AddAsync(Product product)
+        {
+            _products.Add(product);
+
+            return Task.CompletedTask;
+        }
+
+        public Task UpdateAsync(Product product)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteAsync(Product product)
+        {
+            _products.Remove(product);
+
             return Task.CompletedTask;
         }
     }
