@@ -106,11 +106,6 @@ Actualmente contiene casos de uso para:
 
 - Productos.
 - Carritos.
-
-Actualmente contiene casos de uso para:
-
-- Productos.
-- Carritos.
 - Órdenes.
 
 Más adelante se agregarán casos de uso para:
@@ -136,6 +131,8 @@ Actualmente implementa persistencia para:
 - Productos.
 - Carritos.
 - Items del carrito.
+- Órdenes.
+- Items de órdenes.
 
 ### Ecommerce.Api
 
@@ -238,6 +235,7 @@ Los entregables documentados hasta el momento son:
 - `13-carrito-catalogo-real.md`
 - `14-checkout-ordenes-dominio.md`
 - `15-checkout-ordenes-application.md`
+- `16-checkout-ordenes-infrastructure.md`
 
 ## Decisiones arquitectónicas documentadas
 
@@ -258,6 +256,7 @@ Hasta el momento se documentaron decisiones como:
 - Integrar carrito con catálogo real.
 - Modelar órdenes de compra en el dominio.
 - Definir casos de uso de órdenes en Application.
+- Persistir órdenes con Entity Framework Core.
 
 ## Estado actual del proyecto
 
@@ -273,12 +272,13 @@ Actualmente el proyecto cuenta con:
 - Integración del carrito con el catálogo real de productos.
 - Dominio inicial de órdenes de compra.
 - Casos de uso de órdenes en Application.
+- Persistencia de órdenes con Entity Framework Core y PostgreSQL.
 - Tests unitarios para reglas de dominio y servicios de aplicación.
 - Documentación técnica por entregable.
 - ADRs para decisiones arquitectónicas importantes.
 
 ## Próximo paso
 
-El siguiente paso es crear la capa Infrastructure para órdenes.
+El siguiente paso es crear la API de órdenes.
 
-Ese entregable permitirá persistir órdenes reales en PostgreSQL, preparando el sistema para exponer endpoints HTTP de checkout y órdenes.
+Ese entregable permitirá exponer endpoints HTTP para crear órdenes desde carritos, consultar órdenes, confirmar órdenes y cancelar órdenes.
