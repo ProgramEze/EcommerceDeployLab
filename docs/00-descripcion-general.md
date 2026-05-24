@@ -107,9 +107,14 @@ Actualmente contiene casos de uso para:
 - Productos.
 - Carritos.
 
+Actualmente contiene casos de uso para:
+
+- Productos.
+- Carritos.
+- Órdenes.
+
 Más adelante se agregarán casos de uso para:
 
-- Órdenes.
 - Pagos.
 - Checkout completo.
 
@@ -232,6 +237,7 @@ Los entregables documentados hasta el momento son:
 - `12-carrito-api.md`
 - `13-carrito-catalogo-real.md`
 - `14-checkout-ordenes-dominio.md`
+- `15-checkout-ordenes-application.md`
 
 ## Decisiones arquitectónicas documentadas
 
@@ -251,6 +257,7 @@ Hasta el momento se documentaron decisiones como:
 - Exponer el carrito mediante controller.
 - Integrar carrito con catálogo real.
 - Modelar órdenes de compra en el dominio.
+- Definir casos de uso de órdenes en Application.
 
 ## Estado actual del proyecto
 
@@ -265,12 +272,13 @@ Actualmente el proyecto cuenta con:
 - Carrito de compras con dominio, application, infrastructure y API.
 - Integración del carrito con el catálogo real de productos.
 - Dominio inicial de órdenes de compra.
+- Casos de uso de órdenes en Application.
 - Tests unitarios para reglas de dominio y servicios de aplicación.
 - Documentación técnica por entregable.
 - ADRs para decisiones arquitectónicas importantes.
 
 ## Próximo paso
 
-El siguiente paso es crear la capa Application para órdenes.
+El siguiente paso es crear la capa Infrastructure para órdenes.
 
-Ese entregable permitirá convertir un carrito real en una orden de compra, preparando el sistema para el checkout completo y la futura integración de pagos.
+Ese entregable permitirá persistir órdenes reales en PostgreSQL, preparando el sistema para exponer endpoints HTTP de checkout y órdenes.
