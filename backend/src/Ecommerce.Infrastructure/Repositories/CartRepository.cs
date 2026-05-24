@@ -29,7 +29,16 @@ public class CartRepository : ICartRepository
 
     public async Task UpdateAsync(Cart cart)
     {
-        _context.Carts.Update(cart);
+        foreach (var item in cart.Items)
+        {
+            var entry = _context.Entry(item);
+
+            if (entry.State == EntityState.Detached)
+            {
+                entry.State = EntityState.Added;
+            }
+        }
+
         await _context.SaveChangesAsync();
     }
 
