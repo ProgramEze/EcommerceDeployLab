@@ -25,13 +25,13 @@ public class OrderServiceTests
         {
             CartId = cart.Id,
             CustomerName = "Ezequiel Díaz",
-            CustomerEmail = "ezequiel@example.com"
+            CustomerEmail = "diazezequiel777@gmail.com"
         });
 
         Assert.NotEqual(Guid.Empty, result.Id);
         Assert.Equal(cart.Id, result.CartId);
         Assert.Equal("Ezequiel Díaz", result.CustomerName);
-        Assert.Equal("ezequiel@example.com", result.CustomerEmail);
+        Assert.Equal("diazezequiel777@gmail.com", result.CustomerEmail);
         Assert.Equal(OrderStatus.Pending, result.Status);
         Assert.Single(result.Items);
         Assert.Equal(2, result.TotalItems);
